@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Mirror — {{BOOK_TITLE}}</title>
+<style>
+  :root {
+    --bg: #0a0a14;
+    --surface: #12121e;
+    --text: #e0e0e8;
+    --text-dim: #8888a0;
+    --accent: #4a9eff;
+    --accent-dim: #2a5a9a;
+    --border: #2a2a3e;
+    --left-bg: #16162a;
+    --right-bg: #1a1a2e;
+    --serif: 'Cormorant Garamond', 'Georgia', serif;
+    --sans: 'Inter', 'Helvetica Neue', sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--serif);
+    font-size: 17px;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Cover Page */
+  .cover {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    border-bottom: 2px solid var(--accent);
+  }
+  .cover .book-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+  }
+  .cover .book-author {
+    font-size: 1.4rem;
+    color: var(--text-dim);
+    margin-bottom: 3rem;
+    font-style: italic;
+  }
+  .cover .mirror-for {
+    font-family: var(--sans);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .cover .reader-name {
+    font-size: 2rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+  .cover .date {
+    font-family: var(--sans);
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    margin-top: 3rem;
+  }
+  .cover .credit {
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 1rem;
+    opacity: 0.6;
+  }
+
+  /* Navigation */
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    -webkit-overflow-scrolling: touch;
+  }
+  .nav a {
+    color: var(--text-dim);
+    text-decoration: none;
+    white-space: nowrap;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    transition: all 0.2s;
+  }
+  .nav a:hover {
+    color: var(--accent);
+    background: var(--left-bg);
+  }
+
+  /* Chapter */
+  .chapter {
+    padding: 3rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+  .chapter:last-child { border-bottom: none; }
+
+  .chapter-title {
+    font-size: 2rem;
+    color: var(--text);
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+  }
+  .chapter-title .num {
+    color: var(--accent);
+    font-family: var(--sans);
+    font-size: 0.9rem;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .key-ideas {
+    font-size: 1.1rem;
+    color: var(--text-dim);
+    margin-bottom: 2rem;
+    font-style: italic;
+    line-height: 1.6;
+    padding-left: 1rem;
+    border-left: 3px solid var(--accent-dim);
+  }
+
+  /* Two-column table */
+  .mirror-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .mirror-table th {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 0.75rem 1.5rem;
+    text-align: left;
+    position: sticky;
+    top: 3rem;
+    z-index: 10;
+  }
+  .mirror-table th:first-child {
+    background: var(--left-bg);
+    color: var(--accent);
+  }
+  .mirror-table th:last-child {
+    background: var(--right-bg);
+    color: #e8a040;
+  }
+  .mirror-table td {
+    vertical-align: top;
+    padding: 1.25rem 1.5rem;
+    font-size: 1rem;
+    line-height: 1.75;
+    border-bottom: 1px solid var(--border);
+  }
+  .mirror-table td:first-child {
+    background: var(--left-bg);
+    width: 50%;
+  }
+  .mirror-table td:last-child {
+    background: var(--right-bg);
+    width: 50%;
+  }
+  .mirror-table tr:last-child td { border-bottom: none; }
+
+  /* Right column highlights */
+  .mirror-table td:last-child strong {
+    color: #e8a040;
+    font-weight: 600;
+  }
+  .mirror-table td:last-child em {
+    color: #c89060;
+    font-style: italic;
+  }
+
+  /* Left column quotes */
+  .mirror-table td:first-child blockquote {
+    border-left: 2px solid var(--accent-dim);
+    padding-left: 1rem;
+    margin: 0.75rem 0;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  /* Not applicable notice */
+  .not-applicable {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-dim);
+    font-style: italic;
+    font-size: 0.95rem;
+  }
+
+  /* Unverified claim marker */
+  .unverified {
+    color: #ff6060;
+    font-size: 0.7rem;
+    font-family: var(--sans);
+    vertical-align: super;
+    cursor: help;
+  }
+
+  /* Print styles */
+  @media print {
+    :root { --bg: #fff; --surface: #fff; --text: #111; --text-dim: #555;
+            --border: #ddd; --left-bg: #f8f8f8; --right-bg: #fff8f0;
+            --accent: #1a5faa; --accent-dim: #aac; }
+    body { font-size: 11pt; line-height: 1.5; }
+    .cover { min-height: auto; page-break-after: always; padding: 2rem; }
+    .nav { display: none; }
+    .chapter { page-break-inside: avoid; padding: 1.5rem 0; }
+    .mirror-table th { position: static; }
+    .mirror-table td { font-size: 9.5pt; padding: 0.75rem 1rem; }
+  }
+
+  /* Mobile */
+  @media (max-width: 768px) {
+    .cover .book-title { font-size: 2rem; }
+    .mirror-table, .mirror-table tbody, .mirror-table th, .mirror-table td, .mirror-table tr {
+      display: block;
+    }
+    .mirror-table th { position: static; }
+    .mirror-table td { width: 100% !important; }
+    .mirror-table td:first-child { border-bottom: none; padding-bottom: 0.5rem; }
+    .mirror-table td:last-child { border-top: 2px solid #e8a040; padding-top: 1rem; }
+    .chapter { padding: 2rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<div class="cover">
+  <div class="mirror-for">A Book Mirror for</div>
+  <div class="reader-name">{{READER_NAME}}</div>
+  <div class="book-title" style="margin-top:3rem">{{BOOK_TITLE}}</div>
+  <div class="book-author">by {{BOOK_AUTHOR}}</div>
+  <div class="date">{{DATE}}</div>
+  <div class="credit">Concept by Garry Tan · Powered by Hermes Book Mirror</div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  {{NAV_LINKS}}
+</div>
+
+<!-- CHAPTERS — repeat this block for each chapter -->
+<div class="chapter" id="ch-{{N}}">
+  <div class="chapter-title">
+    <span class="num">Chapter {{N}}</span>
+    {{CHAPTER_TITLE}}
+  </div>
+  <div class="key-ideas">{{KEY_IDEAS_SUMMARY}}</div>
+  <table class="mirror-table">
+    <thead>
+      <tr>
+        <th>What the Author Says</th>
+        <th>How This Applies to You</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{LEFT_COLUMN_CONTENT}}</td>
+        <td>{{RIGHT_COLUMN_CONTENT}}</td>
+      </tr>
+      <!-- More rows as needed -->
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>
